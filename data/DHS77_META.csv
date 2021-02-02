@@ -1,0 +1,63 @@
+Country,Mal_Prev,Mal2,UN.Regions,SSA,UN.Sub.Region,Year,Height_Age_N,stunt,stunt_n,wasted,Weight_Height_N,wasted_n,Weight_Age_N,underweight,underweight_n
+Kyrgyz Republic,0,,Asia,Central Asia,Central Asia,2012,4337,17.7,768,2.7,4337,117,4337,3.4,147
+Tajikistan,0,,Asia,Central Asia,Central Asia,2017,6694,17.5,1171,5.5,6684,368,6716,7.5,504
+Egypt,0,,Africa,North Africa,Northern Africa,2014,13601,21.4,2911,8.4,13601,1142,13601,5.5,748
+Samoa,0,,Oceania,Oceania,Polynesia,2008,8422,27.1,2282,1.4,8422,118,8422,4.3,362
+Myanmar,1.18,,Asia,South & Southeast Asia,Southeastern Asia,2016,4089,29.2,1194,6.9,4076,281,4100,18.9,775
+Timor-Leste,0.02,,Asia,South & Southeast Asia,Southeastern Asia,2016,6714,45.6,3062,22.6,6476,1464,7206,39.9,2875
+Bolivia,0,,Americas,South America,Latin America and the Caribbean,2008,8422,27.1,2282,1.4,8422,118,8422,4.3,362
+Colombia,1.23,,Americas,South America,Latin America and the Caribbean,2010,15702,13.2,2073,0.9,15702,141,15702,3.4,534
+Dominican Republic,0.03,,Americas,South America,Latin America and the Caribbean,2013,3619,6.9,250,2,3619,72,3619,3.8,138
+Guatemala,0.14,,Americas,South America,Latin America and the Caribbean,2015,12567,46.5,5844,0.7,12567,88,12567,12.6,1583
+Guyana,4.07,,Americas,South America,Latin America and the Caribbean,2009,1522,18.2,277,5.3,1522,81,1522,10.5,160
+Haiti,0.84,,Americas,South America,Latin America and the Caribbean,2017,6618,21.9,1449,3.6,6589,237,6646,9.4,625
+Honduras,0.26,,Americas,South America,Latin America and the Caribbean,2012,10167,22.6,2298,1.4,10167,142,10167,7,712
+Peru,2.12,,Americas,South America,Latin America and the Caribbean,2012,9168,18.1,1659,0.6,9168,55,9168,3.4,312
+Bangladesh,0,,Asia,South Asia,Southern Asia,2014,7318,36.1,2642,14.3,7318,1046,7318,32.6,2386
+India,1.86,,Asia,South Asia,Southern Asia,2016,219796,38.4,84402,21,219796,46157,219796,35.7,78467
+Maldives,0,,Asia,South Asia,Southern Asia,2017,2246,15.3,344,9,2260,203,2327,14.7,342
+Nepal,0.33,,Asia,South Asia,Southern Asia,2016,2421,35.8,867,9.6,2417,232,2428,27,656
+Pakistan,0.86,,Asia,South Asia,Southern Asia,2018,3522,37.6,1324,6.9,3547,245,3622,22.3,808
+Albania,0,,Europe,South Europe,Southern Europe,2018,2322,11.3,262,1.5,2299,34,2367,1.4,33
+Cambodia,2.7,,Asia,Southeast Asia,Southeastern Asia,2014,4893,32.4,1585,9.6,4893,470,4893,23.9,1169
+Burundi,37.9,37.9,Africa,Sub-Saharan Africa,Eastern Africa,2017,6444,55.9,3602,5,6453,323,6464,29.2,1887
+Comoros,0.5,0.5,Africa,Sub-Saharan Africa,Eastern Africa,2012,10854,30.1,3267,11.1,10854,1205,10854,15.3,1661
+Ethiopia,3.5,3.5,Africa,Sub-Saharan Africa,Eastern Africa,2016,10376,38.4,3984,9.8,10412,1020,10552,23.3,2459
+Kenya,9.1,9.1,Africa,Sub-Saharan Africa,Eastern Africa,2014,18986,26,4936,4,18986,759,18986,11,2088
+Madagascar,8.7,8.7,Africa,Sub-Saharan Africa,Eastern Africa,2009,5436,50.1,2723,NA,5436,NA,5436,NA,NA
+Malawi,36,36,Africa,Sub-Saharan Africa,Eastern Africa,2016,5707,37.1,2117,2.7,5764,156,5786,11.4,660
+Mozambique,38.3,38.3,Africa,Sub-Saharan Africa,Eastern Africa,2011,10313,42.6,4393,5.9,10313,608,10313,14.9,1537
+Rwanda,2.2,2.2,Africa,Sub-Saharan Africa,Eastern Africa,2015,3813,37.9,1445,2.2,3813,84,3813,9.3,355
+Tanzania,14.4,14.4,Africa,Sub-Saharan Africa,Eastern Africa,2016,9846,34.4,3387,4.4,9811,432,9886,13.5,1335
+Uganda,30.4,30.4,Africa,Sub-Saharan Africa,Eastern Africa,2016,5117,28.9,1479,3.4,5191,176,5136,10.3,529
+Zambia,17.4,17.4,Africa,Sub-Saharan Africa,Eastern Africa,2014,12328,40.1,4944,6,12328,740,12328,14.8,1825
+Zimbabwe,0.2,0.2,Africa,Sub-Saharan Africa,Eastern Africa,2015,6305,26.8,1690,3.1,6255,194,6352,8.2,521
+Cameroon,30,30,Africa,Sub-Saharan Africa,Middle Africa,2011,5860,32.5,1905,5.6,5860,328,5860,14.6,856
+Chad,40,40,Africa,Sub-Saharan Africa,Middle Africa,2015,10854,39.9,4331,13,10854,1411,10854,28.8,3126
+Democratic Republic of the Congo,30.8,30.8,Africa,Sub-Saharan Africa,Middle Africa,2014,9030,42.7,3856,7.9,9030,713,9030,22.6,2041
+Equatorial Guinea,21.5,21.5,Africa,Sub-Saharan Africa,Middle Africa,2011,1094,26.2,287,3.1,1094,34,1094,3.8,42
+Gabon,15.2,15.2,Africa,Sub-Saharan Africa,Middle Africa,2012,3856,16.5,636,3.3,3856,127,3856,6,231
+Republic of Congo,17.33,17.33,Africa,Sub-Saharan Africa,Middle Africa,2012,4591,24.4,1120,5.9,4591,271,4591,11.6,533
+Sao Tome and Principe,1.78,1.78,Africa,Sub-Saharan Africa,Middle Africa,2009,1544,29.3,452,10.5,1544,162,1544,13.1,202
+Eswatini,0.14,0.14,Africa,Sub-Saharan Africa,Southern Africa,2007,2940,28.9,850,2.5,2940,74,2940,5.4,159
+Lesotho,0,0,Africa,Sub-Saharan Africa,Southern Africa,2014,1869,33.2,621,2.8,1869,52,1869,10.3,193
+Namibia,1.4,1.4,Africa,Sub-Saharan Africa,Southern Africa,2013,2287,23.7,542,6.2,2287,142,2287,13.3,304
+South Africa,0.31,0.31,Africa,Sub-Saharan Africa,Southern Africa,2016,1404,27.4,385,2.4,1384,33,1416,5.8,82
+Angola,13.5,13.5,Africa,Sub-Saharan Africa,Western Africa,2016,7388,37.6,2778,4.8,7510,360,7468,18.5,1382
+Benin,36.3,36.3,Africa,Sub-Saharan Africa,Western Africa,2018,12777,32.2,4114,4.9,13260,650,12832,16.6,2130
+Burkina Faso,76.1,76.1,Africa,Sub-Saharan Africa,Western Africa,2010,6994,34.6,2420,15.5,6994,1084,6994,25.7,1797
+Cote d'Ivoire,35,35,Africa,Sub-Saharan Africa,Western Africa,2012,3581,29.8,1067,7.5,3581,269,3581,14.9,534
+Gambia,2.4,2.4,Africa,Sub-Saharan Africa,Western Africa,2013,3372,24.5,826,11.5,3372,388,3372,16.2,546
+Ghana,36,36,Africa,Sub-Saharan Africa,Western Africa,2014,2895,18.8,544,4.7,2895,136,2895,11,318
+Guinea,36.8,36.8,Africa,Sub-Saharan Africa,Western Africa,2012,3531,31.2,1102,9.6,3531,339,3531,18,636
+Liberia,44.7,44.7,Africa,Sub-Saharan Africa,Western Africa,2013,3520,31.6,1112,6,3520,211,3520,15,528
+Mali,18.9,18.9,Africa,Sub-Saharan Africa,Western Africa,2013,4857,38.3,1860,12.7,4857,617,4857,25.5,1239
+Niger,36,36,Africa,Sub-Saharan Africa,Western Africa,2012,5481,43.9,2406,18,5481,987,5481,36.4,1995
+Nigeria,36.2,36.2,Africa,Sub-Saharan Africa,Western Africa,2013,26190,36.8,9638,18,26190,4714,26190,28.7,7517
+Senegal,0.9,0.9,Africa,Sub-Saharan Africa,Western Africa,2017,10864,16.5,1793,8.9,10980,977,10910,14.3,1560
+Sierra Leone,52.7,52.7,Africa,Sub-Saharan Africa,Western Africa,2013,5094,37.9,1931,9.3,5094,474,5094,16.4,835
+Togo,37.8,37.8,Africa,Sub-Saharan Africa,Western Africa,2014,3282,27.5,903,6.5,3282,213,3282,16,525
+Armenia,0,,Asia,West Asia,Western Asia,2016,1573,9.4,148,4,1555,62,1609,2.4,39
+Azerbaijan,0,,Asia,West Asia,Western Asia,2006,1979,25.1,497,6.8,1979,135,1979,7.7,152
+Turkey,0,,Asia,West Asia,Western Asia,2013,2519,9.5,239,10.9,2519,275,2519,5.2,131
+Yemen,2.2,,Asia,West Asia,Western Asia,2013,13823,46.5,6428,16.3,13823,2253,13823,39,5391
