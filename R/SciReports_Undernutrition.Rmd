@@ -1,0 +1,497 @@
+---
+title: R Script to reroduce results of ;Global, regional and country epidemiology
+  and prevalence of stunting, wasting and underweight in low- and middle- income countries,
+  2006-2018
+output:
+  html_document:
+    df_print: paged
+  html_notebook: default
+  word_document: default
+---
+
+# clear R global environment
+rm(list=ls())
+
+#Load the libraries
+
+```{r, message=FALSE}
+# load libraries
+library(olsrr) # linear regression
+library(tidyverse) # general stuff
+library(hrbrthemes) # pretty plots
+library(ggplot2) # pretty plots
+library(plotly) # interactive plots
+library(gapminder) # interactive plots
+library(pastecs) # stat.desc
+library(metafor) # for meta-analysis: mixed-effects logistic and Poisson regression models
+library(meta) # meta-regression, GLMM, forest plots,(subgroup) meta-analyses.
+library(sp) # spatial data
+library(rgdal) #  projection/transformation operations for shapefiles
+library(sf) # Simple Features for R
+library(rnaturalearth)
+library(tmap) # cool maps
+library(ggpubr) # 'ggplot2' Based Publication Ready Plots
+library(ggpmisc) #Miscellaneous Extensions to 'ggplot2'
+library(spData)
+library(cowplot)# plot grid
+```
+
+# load data
+
+world
+```{r}
+dat <- read.csv(file="DHS77_META.csv", header=T,stringsAsFactors=F)
+hdi<- read.csv(file="HDI.csv", header=T,stringsAsFactors=F)
+educ<-read.csv(file="Women_Education.csv")
+dat <- merge(dat,hdi, by=c("Country"), all.x=T)
+dat <- merge(dat,educ, by=c("Country"), all.x=T)
+
+#dat_meta <- merge(dat,hdi, by=c("Country"), all.x=T)
+dat$name=dat$Country
+
+```
+
+
+
+# display maps
+
+```{r map stunt}
+WorldData <- map_data('world')
+WorldData %>% filter(region != "Antarctica") -> WorldData
+WorldData <- fortify(WorldData)
+
+p <- ggplot()
+p <- p + geom_map(data=WorldData, map=WorldData,
+                  aes(x=long, y=lat, group=group, map_id=region),
+                  fill="white", colour="#7f7f7f", size=0.5)
+p <- p + geom_map(data=dat, map=WorldData,
+                  aes(fill=stunt, map_id=Country),
+                  colour="#7f7f7f", size=0.5)
+p <- p + coord_map("rectangular", lat0=0, xlim=c(-180,180), ylim=c(-60, 90))
+#p <- p + scale_fill_continuous(low="thistle2", high="darkred", guide="colorbar")
+p <-p+ scale_fill_distiller(palette = "Spectral")
+
+p <- p + scale_y_continuous(breaks=c())
+p <- p + scale_x_continuous(breaks=c())
+p <- p + labs(fill="Stunting(%)", title="", x="", y="")
+p <- p + theme_bw()
+p <- p + theme(panel.border = element_blank())
+
+par(mai=c(0,0,0.2,0),xaxs="i",yaxs="i")
+p 
+
+```
+
+
+
+
+```{r}
+world_stunt = world %>%
+  filter(continent!= "Antarctica", !is.na(iso_a2)) %>%
+  #filter(continent == "Africa", !is.na(iso_a2)) #%>%
+  left_join(worldbank_df, by = "iso_a2") %>%
+  dplyr::select(name, subregion, gdpPercap, HDI, pop_growth) %>%
+  left_join(dat, by = "name") %>%
+  st_transform("+proj=longlat +datum=WGS84 +no_defs")
+
+worldbank_df
+# Map the output
+tm_shape(world_stunt) + tm_polygons(col="HDI_2018", style="quantile") +
+  tm_legend(outside=TRUE)
+```
+
+
+# stunting meta-analysis: Figure 1
+
+```{r stunting}
+# Fit model
+m1.pft <- metaprop(stunt_n, Height_Age_N, data = dat, studlab = paste (Country, Year, sep = ", "), comb.fixed =F,
+                   sm = "PFT", pscale = 100, method.ci = "NAsm",
+                   method.tau = "DL")
+m1.plogit <- update(m1.pft, sm = "PLOGIT",backtransf = T)
+# subgroup analysis by UN subregion
+m1.plogits<- update(m1.pft, byvar= dat$UN.Sub.Region,print.byvar=F)
+
+# plot forest plot
+pdf("figs/Figure2.pdf", width = 12, height = 25)
+forest(m1.plogits,
+       leftlabs = c("Country, Year of survey", "Stunted", "Total"),
+       digits = 2,
+       col.by="black",
+       #sortvar = Year,
+       squaresize=0.5,
+       col.square="navy",
+       col.diamond="maroon",
+       col.diamond.lines="maroon",
+       print.pval.Q = T,
+       xlab="Prevalence of stunting (%)",
+       xlim = c(0, 60), at = c(0,20,40,60),pscale = 100,
+       backtransf = T)
+dev.off()
+
+```
+
+
+# wasting meta-analysis: Figure 2
+
+```{r wasting}
+# Fit model
+
+m2.pft <- metaprop(wasted_n, Weight_Height_N, data = dat, studlab = paste (Country, Year, sep = ", "),comb.fixed=F,
+                   sm = "PFT", pscale = 100, method.ci = "NAsm",
+                   method.tau = "DL")
+m2.plogit <- update(m2.pft , sm = "PLOGIT",backtransf = T)
+# subgroup analysis by UN subregion
+m2.plogits<- update(m2.pft, byvar= dat$UN.Sub.Region,print.byvar=F)
+
+# plot forest plot
+pdf("figs/Figure3.pdf", width = 12, height = 25)
+forest(m2.plogits,
+       leftlabs = c("Country, Year of survey", "Wasted", "Total"),
+       digits = 2,
+       col.by="black",
+       sortvar = Year,
+       squaresize=0.5,
+       col.square="navy",
+       col.diamond="maroon",
+       col.diamond.lines="maroon",
+       print.pval.Q = T,
+       xlab="Prevalence of wasting (%)",
+       xlim = c(0, 25), at = c(0,5,10,15,20,25),pscale = 100,
+       backtransf = T)
+dev.off()
+
+```
+
+
+# underweight meta-analysis: Figure 3
+
+```{r underweight}
+# Fit model
+
+m3.pft <- metaprop(underweight_n, Weight_Age_N, data = dat, studlab = paste (Country, Year, sep = ", ") ,comb.fixed=F,
+                   sm = "PFT", pscale = 100, method.ci = "NAsm",
+                   method.tau = "DL")
+
+m3.plogit <- update(m1.plogit , sm = "PLOGIT",backtransf = T)
+# subgroup analysis by UN subregion
+m3.plogits<- update(m3.pft, byvar= dat$UN.Sub.Region,print.byvar=F)
+
+# plot forest plot
+pdf("figs/Figure4.pdf", width = 12, height = 25)
+forest(m3.plogits,
+       leftlabs = c("Country, Year of survey", "Underweight", "Total"),
+       digits = 2,
+       col.by="black",
+       sortvar = Year,
+       squaresize=0.5,
+       col.square="navy",
+       col.diamond="maroon",
+       col.diamond.lines="maroon",
+       print.pval.Q = T,
+       xlab="Prevalence of underweight (%)",
+       xlim = c(0, 50), at = c(0,10,20,30,40,50),pscale = 100,
+       backtransf = T)
+dev.off()
+
+```
+
+
+# stunting meta-analysis: Supplementary Figure S2
+
+```{r stunting S2}
+# Fit model
+m1.pft <- metaprop(stunt_n, Height_Age_N, data = dat, studlab = paste (Country, Year, sep = ", "), comb.fixed =F,
+                   sm = "PFT", pscale = 100, method.ci = "NAsm",
+                   method.tau = "DL")
+m1.plogit <- update(m1.pft, sm = "PLOGIT",backtransf = T)
+# subgroup analysis by UN subregion
+m1.plogits<- update(m1.pft, byvar= dat$UN.Regions,print.byvar=F)
+
+# plot forest plot
+pdf("figs/SupplementaryFigureS5.pdf", width = 12, height = 18)
+forest(m1.plogits,
+       leftlabs = c("Country, Year of survey", "Stunted", "Total"),
+       digits = 2,
+       col.by="black",
+       #sortvar = Year,
+       squaresize=0.5,
+       col.square="navy",
+       col.diamond="maroon",
+       col.diamond.lines="maroon",
+       print.pval.Q = T,
+       xlab="Prevalence of stunting (%)",
+       xlim = c(0, 60), at = c(0,20,40,60),pscale = 100,
+       backtransf = T)
+dev.off()
+
+```
+
+# wasting meta-analysis: Supplementary Figure S3
+
+```{r wasting S3}
+# Fit model
+
+m2.pft <- metaprop(wasted_n, Weight_Height_N, data = dat, studlab = paste (Country, Year, sep = ", "),comb.fixed=F,
+                   sm = "PFT", pscale = 100, method.ci = "NAsm",
+                   method.tau = "DL")
+m2.plogit <- update(m2.pft , sm = "PLOGIT",backtransf = T)
+# subgroup analysis by UN subregion
+m2.plogits<- update(m2.plogit, byvar= UN.Regions,print.byvar=F)
+
+# plot forest plot
+pdf("figs/SupplementaryFigureS6.pdf", width = 12, height = 18)
+forest(m2.plogits,
+       leftlabs = c("Country, Year of survey", "Wasted", "Total"),
+       digits = 2,
+       col.by="black",
+       sortvar = Year,
+       squaresize=0.5,
+       col.square="navy",
+       col.diamond="maroon",
+       col.diamond.lines="maroon",
+       print.pval.Q = T,
+       xlab="Prevalence of wasting (%)",
+       xlim = c(0, 25), at = c(0,5,10,15,20,25),pscale = 100,
+       backtransf = T)
+dev.off()
+
+```
+
+
+
+# Underweight meta-analysis: Supplementary Figure S4
+
+```{r underweight S4}
+# Fit model
+
+m3.pft <- metaprop(underweight_n, Weight_Age_N, data = dat, studlab = paste (Country, Year, sep = ", ") ,comb.fixed=F,
+                   sm = "PFT", pscale = 100, method.ci = "NAsm",
+                   method.tau = "DL")
+
+m3.plogit <- update(m3.pft, sm = "PLOGIT",backtransf = T)
+# subgroup analysis by UN subregion
+m3.plogits<- update(m3.plogit, byvar= UN.Regions,print.byvar=F)
+
+# plot forest plot
+pdf("figs/SupplementaryFigureS7.pdf", width = 15, height = 22)
+forest(m3.plogits,
+       leftlabs = c("Country, Year of survey", "Underweight", "Total"),
+       digits = 2,
+       col.by="black",
+       sortvar = Year,
+       squaresize=0.5,
+       col.square="navy",
+       col.diamond="maroon",
+       col.diamond.lines="maroon",
+       print.pval.Q = T,
+       xlab="Prevalence of underweight (%)",
+       xlim = c(0, 50), at = c(0,10,20,30,40,50),pscale = 100,
+       backtransf = T)
+dev.off()
+
+```
+
+
+
+#Meta-regression. Fitting generalized linear mixed effects models for stunting
+
+```{r stunting meta-regression}
+# Use glmm to estimate the risk of stunting
+model_S <- rma.glmm(xi=stunt_n, ni=Height_Age_N, measure="PLO", mods = ~ relevel(factor(UN.Sub.Region),ref="Central Asia")+dat$HDI_Cat2, dat=dat, method="ML")
+round(exp(coef(summary(model_S))[-1,c("estimate", "ci.lb", "ci.ub")]), 2)
+print(model_S,digits=3)
+
+# add malaria but subset to SSA
+model_S <- rma.glmm(xi=stunt_n, ni=Height_Age_N, measure="PLO", mods = ~ relevel(factor(UN.Sub.Region),ref="Central Asia")+HDI_Cat2+scale(Mal_Prev), dat=dat,subset = SSA == "Sub-Saharan Africa", method="ML")
+round(exp(coef(summary(model_S))[-1,c("estimate", "ci.lb", "ci.ub")]), 2)
+print(model_S,digits=3)
+
+```
+
+
+Meta-regression. Fitting generalized linear mixed effects models for wasting
+
+```{r wasting meta-regression}
+# Use glmm to estimate the risk of wasting
+model_W <- rma.glmm( xi=wasted_n, ni=Weight_Height_N, measure="PLO", mods = ~ relevel(factor(UN.Sub.Region),ref="Central Asia")+dat$HDI_Cat2, dat=dat, method="ML")
+round(exp(coef(summary(model_W))[-1,c("estimate", "ci.lb", "ci.ub")]), 2)
+print(model_W,digits=3)
+
+# add malaria but subset to SSA
+model_W <- rma.glmm(xi=wasted_n, ni=Weight_Height_N, measure="PLO", mods = ~ relevel(factor(UN.Sub.Region),ref="Central Asia")+HDI_Cat2+scale(Mal_Prev), dat=dat,subset = SSA == "Sub-Saharan Africa", method="ML")
+round(exp(coef(summary(model_W))[-1,c("estimate", "ci.lb", "ci.ub")]), 2)
+print(model_W,digits=3)
+
+```
+
+Meta-regression. Fitting generalized linear mixed effects models for underweight
+
+```{r underweight meta-regression}
+
+# Use glmm to estimate the risk of underweight
+model_U <- rma.glmm( xi=underweight_n, ni=Weight_Age_N, measure="PLO", mods = ~ relevel(factor(UN.Sub.Region),ref="Central Asia")+dat$HDI_Cat2, dat=dat, method="ML")
+round(exp(coef(summary(model_U))[-1,c("estimate", "ci.lb", "ci.ub")]), 2)
+print(model_U,digits=3)
+
+# add malaria but subset to SSA
+model_U <- rma.glmm(xi=underweight_n, ni=Weight_Age_N, measure="PLO", mods = ~ relevel(factor(UN.Sub.Region),ref="Central Asia")+HDI_Cat2+scale(Mal_Prev), dat=dat,subset = SSA == "Sub-Saharan Africa", method="ML")
+round(exp(coef(summary(model_U))[-1,c("estimate", "ci.lb", "ci.ub")]), 2)
+print(model_U,digits=3)
+
+```
+
+
+
+
+
+
+
+# plot for HDI: linear trend + confidence interval
+
+```{r}
+# plot stunting as function of HDI
+
+s1=ggplot(dat, aes(x=HDI_2018, y=stunt)) +
+  geom_point(alpha=0.8, size=3) +
+  geom_smooth(method=lm , color="red", fill="#69b3a2", se=TRUE) +
+  theme_ipsum()
+
+s1=s1+ xlab("Human development index")+
+  ylab('Prevalence of stunting (%)')+
+  theme(
+    axis.title.x=element_text(angle=0, color='black',face = "bold",size = 20),
+    axis.title.y=element_text(angle=90, color='black', face='bold', size=20),
+    axis.text.x = element_text(face="bold", color="black",size=20, angle=0),
+    axis.text.y = element_text(face="bold", color="black", size=20, angle=0),
+    legend.text = element_text(colour="black", size=20,face="bold"),
+    legend.title = element_text(colour="black", size=20,face="bold"))
+s1
+cor.test(dat$HDI_2018, dat$stunt, method=c("spearman"))
+
+# plot wasting
+
+w1=ggplot(dat, aes(x=HDI_2018, y=wasted)) +
+  geom_point(alpha=0.8, size=3) +
+  geom_smooth(method=lm , color="red", fill="#69b3a2", se=TRUE) +
+  theme_ipsum()
+
+w1=w1+ xlab("Human development index")+
+  ylab('Prevalence of wasting (%)')+
+  theme(
+    axis.title.x=element_text(angle=0, color='black',face = "bold",size = 20),
+    axis.title.y=element_text(angle=90, color='black', face='bold', size=20),
+    axis.text.x = element_text(face="bold", color="black",size=20, angle=0),
+    axis.text.y = element_text(face="bold", color="black", size=20, angle=0),
+    legend.text = element_text(colour="black", size=20,face="bold"),
+    legend.title = element_text(colour="black", size=20,face="bold"))
+w1
+cor.test(dat$HDI_2018, dat$wasted, method=c("spearman"))
+
+# plot underweight
+
+u1=ggplot(dat, aes(x=HDI_2018, y=underweight)) +
+  geom_point(alpha=0.8, size=3) +
+  geom_smooth(method=lm , color="red", fill="#69b3a2", se=TRUE) +
+  theme_ipsum()
+
+u1=u1+ xlab("Human development index")+
+  ylab('Prevalence of underweight (%)')+
+  theme(
+    axis.title.x=element_text(angle=0, color='black',face = "bold",size = 20),
+    axis.title.y=element_text(angle=90, color='black', face='bold', size=20),
+    axis.text.x = element_text(face="bold", color="black",size=20, angle=0),
+    axis.text.y = element_text(face="bold", color="black", size=20, angle=0),
+    legend.text = element_text(colour="black", size=20,face="bold"),
+    legend.title = element_text(colour="black", size=20,face="bold"))
+u1
+
+cor.test(dat$HDI_2018, dat$underweight, method=c("spearman"))
+
+```
+
+# plot for Malaria: linear trend + confidence interval
+
+```{r}
+# plot stunting as function of malaria
+
+s1=ggplot(subset(dat, UN.Regions %in% c("Africa")), aes(x=Mal_Prev, y=stunt)) +
+  geom_point(alpha=0.8, size=3) +
+  geom_smooth(method=lm , color="red", fill="#69b3a2", se=TRUE) +
+  theme_ipsum()
+
+
+s1=s1+ xlab("Malaria prevalence (%)")+
+  ylab('Prevalence of stunting (%)')+
+  theme(
+    axis.title.x=element_text(angle=0, color='black',face = "bold",size = 20),
+    axis.title.y=element_text(angle=90, color='black', face='bold', size=20),
+    axis.text.x = element_text(face="bold", color="black",size=20, angle=0),
+    axis.text.y = element_text(face="bold", color="black", size=20, angle=0),
+    legend.text = element_text(colour="black", size=20,face="bold"),
+    legend.title = element_text(colour="black", size=20,face="bold"))
+s1
+cor.test(dat$Mal2, dat$stunt, method=c("spearman"))
+
+# plot wasting
+
+w1=ggplot(subset(dat, UN.Regions %in% c("Africa")), aes(x=Mal_Prev, y=wasted)) +
+  geom_point(alpha=0.8, size=3) +
+  geom_smooth(method=lm , color="red", fill="#69b3a2", se=TRUE) +
+  theme_ipsum()
+
+w1=w1+ xlab("Malaria prevalence (%)")+
+  ylab('Prevalence of wasting (%)')+
+  theme(
+    axis.title.x=element_text(angle=0, color='black',face = "bold",size = 20),
+    axis.title.y=element_text(angle=90, color='black', face='bold', size=20),
+    axis.text.x = element_text(face="bold", color="black",size=20, angle=0),
+    axis.text.y = element_text(face="bold", color="black", size=20, angle=0),
+    legend.text = element_text(colour="black", size=20,face="bold"),
+    legend.title = element_text(colour="black", size=20,face="bold"))
+w1
+
+cor.test(dat$Mal2, dat$wasted, method=c("spearman"))
+# plot underweight
+
+u1=ggplot(subset(dat, UN.Regions %in% c("Africa")), aes(x=Mal_Prev, y=underweight)) +
+  geom_point(alpha=0.8, size=3) +
+  geom_smooth(method=lm , color="red", fill="#69b3a2", se=TRUE) +
+  theme_ipsum()
+
+u1=u1+ xlab("Malaria prevalence (%)")+
+  ylab('Prevalence of underweight (%)')+
+  theme(
+    axis.title.x=element_text(angle=0, color='black',face = "bold",size = 20),
+    axis.title.y=element_text(angle=90, color='black', face='bold', size=20),
+    axis.text.x = element_text(face="bold", color="black",size=20, angle=0),
+    axis.text.y = element_text(face="bold", color="black", size=20, angle=0),
+    legend.text = element_text(colour="black", size=20,face="bold"),
+    legend.title = element_text(colour="black", size=20,face="bold"))
+u1
+
+cor.test(dat$Mal2, dat$underweight, method=c("spearman"))
+
+```
+
+```{r}
+# Use row names as point labels
+#df$name <- rownames(df)
+ed=ggscatter(dat, x = "HDI_2018", y = "Value", palette = "jco", add = "reg.line", conf.int = TRUE,
+   label = "Country", repel = TRUE)+
+  stat_cor(aes(), method = "spearman", label.y = 90)+
+  theme_ipsum()
+
+ed=ed+ xlab("Human Development Index")+
+  ylab('Education Attainment for Women')+
+  theme(
+    axis.title.x=element_text(angle=0, color='black',face = "bold",size = 14),
+    axis.title.y=element_text(angle=90, color='black', face='bold', size=14),
+    axis.text.x = element_text(face="bold", color="black",size=20, angle=0),
+    axis.text.y = element_text(face="bold", color="black", size=20, angle=0),
+    legend.text = element_text(colour="black", size=20,face="bold"),
+    legend.title = element_text(colour="black", size=20,face="bold"))
+ed
+
+```
+
